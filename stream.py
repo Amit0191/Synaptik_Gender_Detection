@@ -17,7 +17,7 @@ drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 model = load_model('male-female-detection.model')
 
 webcam = cv2.VideoCapture(0)
-classes = ['men', 'women']
+classes = ['man', 'woman']
 
 with mp_face_detection.FaceDetection(
         model_selection=0, min_detection_confidence=0.5) as face_mesh:
@@ -38,7 +38,7 @@ with mp_face_detection.FaceDetection(
                 continue
             # Set image properties same as model's properties
 
-            face_crop = cv2.resize(face_crop, (128, 128))
+            face_crop = cv2.resize(face_crop, (98, 98))
             face_crop = face_crop.astype("float")/255.0
             face_crop = img_to_array(face_crop)
             face_crop = np.expand_dims(face_crop, axis=0)
@@ -50,7 +50,10 @@ with mp_face_detection.FaceDetection(
             label = "{}: {:.2f}%".format(label, conf[idx] * 100)
 
             Y = f[2] - 10 if f[2] - 10 > 10 else f[2] + 10
-            cv2.putText(frame, label, (f[0], Y), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 0.7, (0, 255, 0), 2)
+            if label[0:3] == 'man':
+                cv2.putText(frame, label, (f[0], Y), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 0.7, (0, 255, 0), 2)
+            else:
+                cv2.putText(frame, label, (f[0], Y), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 0.7, (0, 0, 255), 2)
 
             # display output
             cv2.imshow("Male Female detection", frame)
